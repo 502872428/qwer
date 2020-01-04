@@ -38,7 +38,7 @@
     </el-input>
     </el-form-item>
 <el-form-item label="所属栏目">
-                    <el-select v-model="form.status" placeholder="请选择">
+                    <el-select v-model="form.categoryId" placeholder="请选择">
                         <el-option v-for="item in options"
                             :key="item.value" :label="item.name"
                             :value="item.parentId">
@@ -143,7 +143,7 @@ toAddHandler(){
 return{
        visible:false,
       products:[],
-     
+     options:[],
        form:{
          type:"product"
         
