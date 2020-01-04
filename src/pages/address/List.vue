@@ -2,6 +2,7 @@
     <div> 
     <el-button type="success" size="small" @click="toAddHandler" >添加</el-button>
    <el-button type="danger" size="small" >批量删除</el-button>
+
    <el-table :data="addresses">
     <el-table-column prop="id" label="编号"></el-table-column>
     <el-table-column prop="province" label="省份"></el-table-column>

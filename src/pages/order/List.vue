@@ -1,106 +1,117 @@
 <template>
   <div>
-    <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="所有订单" name="first" />
-      <el-tab-pane label="待支付" name="second" />
-      <el-tab-pane label="待派单" name="third" />
-      <el-tab-pane label="待接单" name="fourth" />
-      <el-tab-pane label="待服务" name="fifth" />
-      <el-tab-pane label="待确认" name="sixth" />
-      <el-tab-pane label="已完成" name="seventh" />
-    </el-tabs>
-    <el-button type="success" size="small" @click.prevent=" toAddHandler">添加</el-button>
+    <!-- 按钮 -->
+    <el-button type="success" size="small" @click="toAddHandler">添加</el-button>
     <el-button type="danger" size="small">批量删除</el-button>
-    <el-table :data="orders">
-      <el-table-column prop="id" label="订单编号" />
-      <el-table-column prop="orderTime" label="下单时间" />
+    <!-- /按钮 -->
+    <!-- 表格 -->
+    <el-table :data="orders.list">
+      <el-table-column prop="id" label="编号" />
+      <el-table-column width="200" prop="orderTime" label="下单时间" />
       <el-table-column prop="total" label="总价" />
       <el-table-column prop="status" label="状态" />
-      <el-table-column prop="customerId" label="顾客id" />
-      <el-table-column prop="label" label="操作">
+      <el-table-column prop="customerId" label="顾客ID" />
+      <el-table-column prop="waiterId" label="员工ID" />
+      <el-table-column prop="addressId" label="地址ID" />
+      <el-table-column fixed="right" label="操作">
         <template v-slot="slot">
           <a href="" @click.prevent="toDeleteHandler(slot.row.id)">删除</a>
           <a href="" @click.prevent="toUpdateHandler(slot.row)">修改</a>
         </template>
       </el-table-column>
     </el-table>
-    <!-- 表格结束-->
-    <!--分页-->
-    <!-- <el-pagination
-      background
+    <!-- /表格结束 -->
+    <!-- 分页开始 -->
+    <el-pagination
       layout="prev, pager, next"
-      :total="50"
-    /> -->
-    <!--模态框-->
+      :total="orders.total"
+      @current-change="pageChageHandler"
+    />
+    <!-- /分页结束 -->
+    <!-- 模态框 -->
     <el-dialog
       title="录入订单信息"
       :visible.sync="visible"
       width="60%"
     >
-      <el-form
-        :model="form"
-        label-width="80px"
-      >
-        <!-- --{{ form }} -->
-        <el-form-item label="订单编号">
-          <el-input v-model="form.id" />
+      <el-form :model="form" label-width="80px">
+        <el-form-item label="用户名">
+          <el-input v-model="form.username" />
         </el-form-item>
-        <el-form-item label="下单时间">
-          <el-input v-model="form.orderTime" />
+        <el-form-item label="密码">
+          <el-input v-model="form.password" type="password" />
         </el-form-item>
-        <el-form-item label="总价">
-          <el-input v-model="form.status" />
-        </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="真实姓名">
           <el-input v-model="form.realname" />
         </el-form-item>
-        <el-form-item label="顾客id">
-          <el-input v-model="form.customerId" />
-        </el-form-item>
-        <el-form-item label="地址id">
-          <el-input v-model="form.addressrId" />
+        <el-form-item label="手机号">
+          <el-input v-model="form.telephone" />
         </el-form-item>
       </el-form>
+
       <span slot="footer" class="dialog-footer">
         <el-button size="small" @click="closeModalHandler">取 消</el-button>
         <el-button size="small" type="primary" @click="submitHandler">确 定</el-button>
       </span>
     </el-dialog>
-  </div></template>
+    <!-- /模态框 -->
+
+  </div>
+</template>
+
 <script>
 import request from '@/utils/request'
 import querystring from 'querystring'
 export default {
-  // 用于存放网页中要放的数据
+  // 用于存放要向网页中显示的数据
   data() {
     return {
       visible: false,
-      orders: [],
-      activeName: 'second',
+      orders: {},
       form: {
         type: 'order'
+      },
+      params: {
+        page: 0,
+        pageSize: 10
       }
     }
   },
   created() {
+    // this为当前vue实例对象
+    // vue实例创建完毕
     this.loadData()
   },
-  // 用于存放网页中要调用的方法
+  // 用于存放网页中需要调用的方法
   methods: {
-    handleClick(tab, event) {
-      console.log(tab, event)
+    // 当分页中当前页改变的时候执行
+    pageChageHandler(page) {
+      // 将params中当前页改为插件中的当前页
+      this.params.page = page - 1
+      // 加载
+      this.loadData()
     },
-    // json
-    // this.form 对象----字符串-->后台{type:'customer',age:12}
     loadData() {
-      const url = 'http://localhost:6677/order/findAll'
-      request.get(url).then((response) => {
+      const url = 'http://localhost:6677/order/queryPage'
+      request({
+        url,
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: querystring.stringify(this.params)
+      }).then((response) => {
+        // orders为一个对象，其中包含了分页信息，以及列表信息
         this.orders = response.data
-      // 将查询结果设置到customers，this指向外面的函数
       })
     },
     submitHandler() {
-      const url = 'http://localhost:6677/order/save'
+      // this.form 对象 ---字符串--> 后台 {type:'order',age:12}
+      // json字符串 '{"type":"order","age":12}'
+      // request.post(url,this.form)
+      // 查询字符串 type=order&age=12
+      // 通过request与后台进行交互，并且要携带参数
+      const url = 'http://localhost:6677/order/saveOrUpdate'
       request({
         url,
         method: 'POST',
@@ -111,8 +122,9 @@ export default {
       }).then((response) => {
         // 模态框关闭
         this.closeModalHandler()
-        this.loadData()
         // 刷新
+        this.loadData()
+        // 提示消息
         this.$message({
           type: 'success',
           message: response.message
@@ -126,38 +138,37 @@ export default {
         type: 'warning'
       }).then(() => {
         // 调用后台接口，完成删除操作
-        // eslint-disable-next-line no-unused-vars
         const url = 'http://localhost:6677/order/deleteById?id=' + id
         request.get(url).then((response) => {
-        // 1.刷新数据
+          // 1. 刷新数据
           this.loadData()
           // 2. 提示结果
           this.$message({
             type: 'success',
-            message: 'response.message'
+            message: response.message
           })
         })
-      // 确认
       })
     },
     toUpdateHandler(row) {
-      this.title = '修改顾客信息'
+      // 模态框表单中显示出当前行的信息
       this.form = row
-      this.visible = true
-    },
-    toAddHandler() {
-      this.form = {
-        type: 'order'
-      }
       this.visible = true
     },
     closeModalHandler() {
       this.visible = false
+    },
+    toAddHandler() {
+      // 将form变为初始值
+      this.form = {
+        type: 'order'
+      }
+      this.visible = true
     }
-
   }
-}// 暴漏接口，让其他模块接受
+}
 </script>
-<style scoped>
-</style>
 
+<style scoped>
+
+</style>
