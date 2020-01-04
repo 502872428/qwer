@@ -32,11 +32,17 @@
         label-width="80px"
       >
         <!-- --{{ form }} -->
+        <el-form-item label="编号">
+          <el-input v-model="form.id"></el-input>
+        </el-form-item>
         <el-form-item label="栏目名称">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
         <el-form-item label="序号">
           <el-input type="num" v-model="form.num"></el-input>
+        </el-form-item>
+        <el-form-item label="父栏目">
+          <el-input type="parentId" v-model="form.parentId"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
