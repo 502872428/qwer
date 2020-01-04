@@ -101,16 +101,25 @@ this.loaddata();
 },
 toDeleteHandle(id){
 //确认
-  this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
+   this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用后台接口，完成删除操作
+        // eslint-disable-next-line no-unused-vars
+        let url = 'http://localhost:6677/product/deleteById?id=' + id
+        request.get(url).then((response) => {
+        // 1.刷新数据
+          this.loaddata()
+          // 2. 提示结果
           this.$message({
             type: 'success',
-            message: '删除成功!'
-          });
+            message: 'response.message'
+          })
         })
+      // 确认
+      })
     },
 toUPdataHandle(row){
   //在模态框的表单中显示当前行的信息
