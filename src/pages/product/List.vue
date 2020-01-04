@@ -7,7 +7,7 @@
     <el-table-column prop="name" label="产品名称"></el-table-column>
     <el-table-column prop="description" label="描述"></el-table-column>
     <el-table-column prop="price" label="价格"></el-table-column>
-     <el-table-column prop="status" label="所属产品"></el-table-column>
+     <el-table-column prop="categoryId" label="所属产品"></el-table-column>
     <el-table-column label="操作">
     <template v-slot="slot">
 <a href="" @click.prevent="toDeleteHandle(slot.row.id)">删除</a>
@@ -38,7 +38,7 @@
     </el-input>
     </el-form-item>
 <el-form-item label="所属栏目">
-                    <el-select v-model="form.categoryId" placeholder="请选择">
+                    <el-select v-model="form.CategoryId" placeholder="请选择">
                         <el-option v-for="item in options"
                             :key="item.value" :label="item.name"
                             :value="item.parentId">
@@ -143,7 +143,7 @@ toAddHandler(){
 return{
        visible:false,
       products:[],
-     options:[],
+      options:[],
        form:{
          type:"product"
         
