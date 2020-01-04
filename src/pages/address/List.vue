@@ -38,7 +38,6 @@
   <el-input  v-model="form.city">
     </el-input>
     </el-form-item>
-  
      <el-form-item label="地区">
   <el-input  v-model="form.area">
     </el-input>
