@@ -141,7 +141,7 @@ this.visible=true
     data(){
 return{
        visible:false,
-       customers:[],
+       addresses:[],
        form:{
          type:"address"
        }
